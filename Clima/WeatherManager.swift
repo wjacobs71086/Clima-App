@@ -12,25 +12,34 @@ struct WeatherManager {
     }
     
     func performRequest(urlString: String){
-        // 1. Create a url, because this could fail, it is an optional
+        // 1. Create a url, because this could fail, it is an optional using if LET syntax
         if let url = URL(string: urlString){
-        // 2. Create a URLSession
+            // 2. Create a URLSession
             let session = URLSession(configuration: .default)
-        // 3. Give the sesssion a task, the completion handler is called oddly because it will complete it at the run time
-            let task = session.dataTask(with: url, completionHandler: handleResponse(data: response: error: ))
-        // 4. Start the task. Because they BEGIN in a suspended state
+            // 3. Give the sesssion a task, the completion handler is called oddly because it will complete it at the run time
+            let task = session.dataTask(with: url) { (data, response, error) in
+                if error != nil {
+                    print("Error", error!)
+                    return
+                }
+                if let safeData = data {
+                    // because this is inside a closure Swift will not add the self. tag for you
+                    self.parseJSON(weatherData: safeData)
+                }
+            }
+            // 4. Start the task. Because they BEGIN in a suspended state
             task.resume()
         }
     }
-    
-    func handleResponse(data: Data?, response: URLResponse?, error: Error?) {
-        if error != nil {
-            print("Error", error!)
-            return
-        }
-        if let safeData = data {
-            let dataString = String(data: safeData, encoding: .utf8)
-            print(dataString!)
+    func parseJSON(weatherData: Data){
+        let decoder = JSONDecoder()
+        do{
+            // the .self is AFTER the struct to show its data TYPE but not the content.
+            let decodedData = try decoder.decode(WeatherData.self, from: weatherData)
+            print(decodedData.weather[0])
+        } catch {
+            print(error)
         }
     }
+    
 }
