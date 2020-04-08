@@ -37,31 +37,18 @@ struct WeatherManager {
             // the .self is AFTER the struct to show its data TYPE but not the content.
             let decodedData = try decoder.decode(WeatherData.self, from: weatherData)
             let id = decodedData.weather[0].id
-            getCondition(weatherId: id)
+            let name = decodedData.name
+            let temp = decodedData.main.temp
+            
+            let weather = WeatherModel(conditionId: id, cityName: name, temperature: temp)
+            // even if this is a function it's basically self calling.
+            print(weather.temperatureString)
+            
         } catch {
             print(error)
         }
     }
     
-    func getCondition(weatherId: Int) -> String {
-        switch weatherId {
-        case 200..<300:
-            return "cloud.bolt.rain"
-        case 300..<400:
-            return "cloud.drizzle"
-        case 500..<600:
-            return "cloud.rain"
-        case 600..<700:
-            return "cloud.snow"
-        case 701...800:
-            return "cloud.fog"
-        case 800:
-            return "sun.min"
-        case 801...804:
-            return "cloud"
-        default:
-            return "cloud.fill"
-        }
-    }
+
     
 }
