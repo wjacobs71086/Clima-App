@@ -1,10 +1,4 @@
-//
-//  ViewController.swift
-//  Clima
-//
-//  Created by Angela Yu on 01/09/2019.
-//  Copyright © 2019 App Brewery. All rights reserved.
-//
+
 
 import UIKit
 
@@ -57,7 +51,7 @@ class WeatherViewController: UIViewController, UITextFieldDelegate, WeatherManag
         textField.text = ""
     }
     
-    func didUpdateWeather(weather: WeatherModel) {
+    func didUpdateWeather(_ weatherManager: WeatherManager , weather: WeatherModel) {
 
            DispatchQueue.main.async {
             self.temperatureLabel.text = weather.temperatureString
@@ -65,7 +59,10 @@ class WeatherViewController: UIViewController, UITextFieldDelegate, WeatherManag
     
         print("you crazy bastard",weather.temperatureString)
     }
-
+    
+    func didFail(_ error: Error) {
+        print(error)
+    }
 
 }
 

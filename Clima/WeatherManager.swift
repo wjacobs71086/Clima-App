@@ -3,7 +3,8 @@
 import Foundation
 
 protocol WeatherManagerDelegate {
-    func didUpdateWeather(weather: WeatherModel)
+    func didUpdateWeather(_ weatherManager: WeatherManager, weather: WeatherModel)
+    func didFail(_ error: Error)
 }
 
 struct WeatherManager {
@@ -12,11 +13,12 @@ struct WeatherManager {
     
     let baseURL = "https://api.openweathermap.org/data/2.5/weather?appid=4908a00f0193f322aaa5d08a25f81607&units=imperial"
     func fetchWeather(city: String) {
-        let urlString = "\(baseURL)&q=\(city.lowercased())"
-        performRequest(urlString: urlString)
+        let encodedCityName = city.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
+        let urlString = "\(baseURL)&q=\(encodedCityName.lowercased())"
+        performRequest(urlString)
     }
     
-    func performRequest(urlString: String){
+    func performRequest(_ urlString: String){
         // 1. Create a url, because this could fail, it is an optional using if LET syntax
         if let url = URL(string: urlString){
             // 2. Create a URLSession
@@ -24,13 +26,14 @@ struct WeatherManager {
             // 3. Give the sesssion a task, the completion handler is called oddly because it will complete it at the run time
             let task = session.dataTask(with: url) { (data, response, error) in
                 if error != nil {
+                    self.delegate?.didFail(error!)
                     print("Error", error!)
                     return
                 }
                 if let safeData = data {
                     // because this is inside a closure Swift will not add the self. tag for you
-                    if let weather01 = self.parseJSON(weatherData: safeData){
-                        self.delegate?.didUpdateWeather(weather: weather01)
+                    if let weather = self.parseJSON(safeData){
+                        self.delegate?.didUpdateWeather(self , weather: weather)
                     }
                 }
             }
@@ -38,7 +41,7 @@ struct WeatherManager {
             task.resume()
         }
     }
-    func parseJSON(weatherData: Data) -> WeatherModel? {
+    func parseJSON(_ weatherData: Data) -> WeatherModel? {
         let decoder = JSONDecoder()
         do{
             // the .self is AFTER the struct to show its data TYPE but not the content.
@@ -53,7 +56,7 @@ struct WeatherManager {
             // print(weather.temperatureString)
             
         } catch {
-            print(error)
+            delegate?.didFail(error)
             return nil
         }
     }
