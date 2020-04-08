@@ -13,15 +13,15 @@ struct WeatherModel {
         // If I wanted a second function to just call here thats fine OR
         // return getCondition(weatherId: conditionId)
         switch conditionId {
-        case 200..<300:
+        case 200...232:
             return "cloud.bolt.rain"
-        case 300..<400:
+        case 300...321:
             return "cloud.drizzle"
-        case 500..<600:
+        case 500...531:
             return "cloud.rain"
-        case 600..<700:
+        case 600...622:
             return "cloud.snow"
-        case 701...800:
+        case 701...781:
             return "cloud.fog"
         case 800:
             return "sun.min"
