@@ -1,7 +1,7 @@
 
 import Foundation
 
-
+// you can have more than one protocol and if it's used often it can have a type Alias. ex: Decodable, Encodable get used enough we can call it Codable
 struct WeatherData: Decodable {
     let name: String
     let main: Main

@@ -2,10 +2,15 @@
 
 import Foundation
 
+protocol WeatherManagerDelegate {
+    func didUpdateWeather(weather: WeatherModel)
+}
 
 struct WeatherManager {
-    let baseURL = "https://api.openweathermap.org/data/2.5/weather?appid=4908a00f0193f322aaa5d08a25f81607&units=imperial"
     
+    var delegate: WeatherManagerDelegate?
+    
+    let baseURL = "https://api.openweathermap.org/data/2.5/weather?appid=4908a00f0193f322aaa5d08a25f81607&units=imperial"
     func fetchWeather(city: String) {
         let urlString = "\(baseURL)&q=\(city.lowercased())"
         performRequest(urlString: urlString)
@@ -24,14 +29,16 @@ struct WeatherManager {
                 }
                 if let safeData = data {
                     // because this is inside a closure Swift will not add the self. tag for you
-                    self.parseJSON(weatherData: safeData)
+                    if let weather01 = self.parseJSON(weatherData: safeData){
+                        self.delegate?.didUpdateWeather(weather: weather01)
+                    }
                 }
             }
             // 4. Start the task. Because they BEGIN in a suspended state
             task.resume()
         }
     }
-    func parseJSON(weatherData: Data){
+    func parseJSON(weatherData: Data) -> WeatherModel? {
         let decoder = JSONDecoder()
         do{
             // the .self is AFTER the struct to show its data TYPE but not the content.
@@ -41,11 +48,13 @@ struct WeatherManager {
             let temp = decodedData.main.temp
             
             let weather = WeatherModel(conditionId: id, cityName: name, temperature: temp)
+            return weather
             // even if this is a function it's basically self calling.
-            print(weather.temperatureString)
+            // print(weather.temperatureString)
             
         } catch {
             print(error)
+            return nil
         }
     }
     

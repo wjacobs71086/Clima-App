@@ -28,7 +28,7 @@ struct WeatherModel {
         case 801...804:
             return "cloud"
         default:
-            return "cloud.fill"
+            return "cloud.fill" 
         }
     }
     
