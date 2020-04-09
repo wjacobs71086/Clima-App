@@ -8,7 +8,6 @@ protocol WeatherManagerDelegate {
 }
 
 struct WeatherManager {
-    
     var delegate: WeatherManagerDelegate?
     
     let baseURL = "https://api.openweathermap.org/data/2.5/weather?appid=4908a00f0193f322aaa5d08a25f81607&units=imperial"
@@ -60,7 +59,4 @@ struct WeatherManager {
             return nil
         }
     }
-    
-
-    
 }
