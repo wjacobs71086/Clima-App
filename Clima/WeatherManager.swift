@@ -12,18 +12,17 @@ struct WeatherManager {
     var delegate: WeatherManagerDelegate?
     
     let baseURL = "https://api.openweathermap.org/data/2.5/weather?appid=4908a00f0193f322aaa5d08a25f81607&units=imperial"
-    func fetchWeather(city: String? = nil, latitude: Double? = nil, longitude: Double? = nil) {
-        if let latitude = latitude, let longitude = longitude {
-            let urlString = "\(baseURL)&lat=\(latitude)&lon=\(longitude)"
-            performRequest(urlString)
-        }
-        if let city = city {
-            let encodedCityName = city.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
-            let urlString = "\(baseURL)&q=\(encodedCityName.lowercased())"
-            performRequest(urlString)
-        }
-        
-
+    
+    // APPARENTLY Swift is okay with functions that have the same name as long as they require different parameters.
+    func fetchWeather(latitude: CLLocationDegrees, longitude: CLLocationDegrees) {
+        let urlString = "\(baseURL)&lat=\(latitude)&lon=\(longitude)"
+        performRequest(urlString)
+    }
+    
+    func fetchWeather(city: String) {
+        let encodedCityName = city.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
+        let urlString = "\(baseURL)&q=\(encodedCityName.lowercased())"
+        performRequest(urlString)
     }
     
     func performRequest(_ urlString: String){
